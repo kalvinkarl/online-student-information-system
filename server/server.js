@@ -24,6 +24,45 @@ app.use(
   })
 );
 
+// database connection
+const dbConfig = require("./app/config/db.config");
+const db = require("./app/models");
+const Role = db.role;
+db.mongoose
+  .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log("Successfully connect to MongoDB.");
+    initial();
+  })
+  .catch(err => {
+    console.error("Connection error", err);
+    process.exit();
+  });
+
+// Initialize roles
+async function initial() {
+  try {
+    let count = await Role.estimatedDocumentCount();
+    if (count === 0) {
+      try {
+        new Role({name: "user"}).save();
+        console.log("added 'user' to roles collection");
+        new Role({name: "moderator"}).save();
+        console.log("added 'user' to roles collection");
+        new Role({name: "admin"}).save();
+        console.log("added 'user' to roles collection");
+      } catch (error) {
+        console.log("error", err);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // simple route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to csusolana application." });
