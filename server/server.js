@@ -28,11 +28,8 @@ app.use(
 const dbConfig = require("./app/config/db.config");
 const db = require("./app/models");
 const Role = db.role;
-db.mongoose
-  .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
+
+db.mongoose.connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`)
   .then(() => {
     console.log("Successfully connect to MongoDB.");
     initial();
@@ -44,29 +41,28 @@ db.mongoose
 
 // Initialize roles
 async function initial() {
-  try {
-    let count = await Role.estimatedDocumentCount();
-    if (count === 0) {
-      try {
-        new Role({name: "user"}).save();
-        console.log("added 'user' to roles collection");
-        new Role({name: "moderator"}).save();
-        console.log("added 'user' to roles collection");
-        new Role({name: "admin"}).save();
-        console.log("added 'user' to roles collection");
-      } catch (error) {
-        console.log("error", err);
-      }
+  Role.estimatedDocumentCount().then(res=>{
+    if(res===0){
+      new Role({name: "user"}).save();
+      console.log("added 'user' to roles collection");
+      new Role({name: "moderator"}).save();
+      console.log("added 'user' to roles collection");
+      new Role({name: "admin"}).save();
+      console.log("added 'user' to roles collection");
     }
-  } catch (error) {
-    console.log(error);
-  }
+  }).catch(err=>{
+    console.log("error", err);
+  });
 }
 
 // simple route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to csusolana application." });
 });
+
+// routes
+require('./app/routes/auth.routes')(app);
+require('./app/routes/user.routes')(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3000;

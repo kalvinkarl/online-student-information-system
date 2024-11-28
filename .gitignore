@@ -187,6 +187,7 @@ publish/
 *.pubxml
 *.publishproj
 *db.config.js
+*auth.config.js
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
 # checkin your Azure Web App publish settings, but sensitive information contained
@@ -378,6 +379,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # VS Code files for those working on multiple tools
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
